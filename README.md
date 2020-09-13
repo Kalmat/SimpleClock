@@ -1,29 +1,34 @@
-# README #
+# Simple Clock for Minecraft 1.14.4 #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is a very simple clock which just shows the in-game time in a human-friendly way, as well as the remaining time to Night or Day (usual leeping or Wake up times).
 
-### What is this repository for? ###
+USAGE:
+* Press 'P" to change clock position on secreen if clock conflicts with other mods.
+* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+NOTE: There is a hidden "gift" which can only be found when looting chests in highly dangerous places... Good Luck! (for this, you will have to install this mod on server as well).
 
-### How do I get set up? ###
+### USAGE ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Press 'P" to change clock position on secreen if clock conflicts with other mods.
+* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods.
 
-### Contribution guidelines ###
+### How do Install it? ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* Prepare your mod development environment (eclipse, OpenJDK and forge (there are many tutorials on the Web)
+* Download repository
+* Copy and replace "src" folder onto your forge project folder
+* Import the gradle project in eclipse
+* Enjoy viewing or modifying it
+
+### How do I get the jar file? ###
+
+* Enter curseforge.com
+* Search for "Simple Clock"
+* Download the .jar file
+* Copy the .jar file to your mods folder (local and server)
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* alescribano@gmail.com
+* Will try to answer as much as I can
