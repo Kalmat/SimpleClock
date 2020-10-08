@@ -2,16 +2,12 @@
 
 This is a very simple clock which just shows the in-game time in a human-friendly way, as well as the remaining time to Night or Day (usual leeping or Wake up times).
 
-USAGE:
-* Press 'P" to change clock position on secreen if clock conflicts with other mods.
-* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods.
-
 NOTE: There is a hidden "gift" which can only be found when looting chests in highly dangerous places... Good Luck! (for this, you will have to install this mod on server as well).
 
 ### USAGE ###
 
 * Press 'P" to change clock position on secreen if clock conflicts with other mods.
-* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods.
+* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods (avoid reserved vanilla keys)
 
 ### How do Install it? ###
 
