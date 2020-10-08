@@ -23,8 +23,6 @@ NOTE: There is a hidden "gift" which can only be found when looting chests in hi
 
 ### How do I get the jar file? ###
 
-* Enter curseforge.com
-* Search for "Simple Clock"
 * Download the .jar file
 * Copy the .jar file to your mods folder (local and server)
 

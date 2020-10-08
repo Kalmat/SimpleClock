@@ -47,3 +47,19 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+/.gradle/
+/build/
+/.classpath
+/.project
+/CREDITS.txt
+/LICENSE.txt
+/README.txt
+/build.gradle
+/changelog.txt
+/gradle.properties
+/gradlew
+/gradlew.bat
+/loot_tables.txt
+/output.txt
+/runClient - SimpleClock.launch
+/simpleclock.png
