@@ -1,21 +1,28 @@
 package dev.alef.simpleclock.client;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class SimpleClockClient {
 	
-	private static final Minecraft MC = Minecraft.getInstance();
-	private static final ClientWorld WORLD = MC.world;
-	private static final MainWindow MW = MC.mainWindow;
-	private static final FontRenderer FR = MC.fontRenderer;
+	private static Minecraft MC = Minecraft.getInstance();
+	private static ClientWorld WORLD = MC.world;
+	private static MainWindow MW = MC.mainWindow;
+	private static FontRenderer FR = MC.fontRenderer;
 	
 	private static int ALIGNTO = 0;
 	private static int HOURS = 0;
@@ -26,8 +33,11 @@ public class SimpleClockClient {
 	private static int COLOR = 0xffffffff;
 	
     private final static Logger LOGGER = LogManager.getLogger();
+    
+    public SimpleClockClient() {
+    }
 	
-	public static void showClock(int alignTo) {
+    public static void showClock(int alignTo) {
 		
 		ALIGNTO = alignTo;
 		
@@ -35,9 +45,10 @@ public class SimpleClockClient {
         drawClock();
     }
 	
+	@SuppressWarnings("resource")
 	private static void getClockInfo() {
 		
-		double mcTime = (int) WORLD.getDayTime();
+		double mcTime = (int) Minecraft.getInstance().world.getDayTime();
         HOURS = (int) ((mcTime / 1000 + 8) % 24);
         MINUTES = (int) (60 * (mcTime % 1000) / 1000);
         TIME = String.format("%02d:%02d", HOURS, MINUTES);
@@ -87,7 +98,7 @@ public class SimpleClockClient {
 		GlStateManager.popMatrix();
     }
                     
-    private static void drawTextUp(String text, int xGap, int yGap, int color, float ratio) {
+    private static  void drawTextUp(String text, int xGap, int yGap, int color, float ratio) {
     	
     	int x = (int) (xGap * ratio);
     	int y = yGap;
@@ -106,4 +117,40 @@ public class SimpleClockClient {
     	}
 		FR.drawStringWithShadow(text, x, y, color);
 	}
+
+    @SuppressWarnings("resource")
+	public static Screen getCurrentScreen() {
+    	return Minecraft.getInstance().currentScreen;
+    }
+    
+	public static int RegisterKeybinding(String stringKey) {
+		
+		int key = getGLFWCode(stringKey);
+		KeyBinding[] KEYBINDS = new KeyBinding[1];
+	    KEYBINDS[0] = new KeyBinding("key.position.desc", key, "key.simpleclock.category");
+	    for (int i = 0; i < KEYBINDS.length; ++i) {
+	        ClientRegistry.registerKeyBinding(KEYBINDS[i]);
+	    }
+	    return key;
+	}
+
+    private static int getGLFWCode(String keyChar) {
+    	
+    	int keyCode = GLFW.GLFW_KEY_P; // default key
+    	
+    	if (keyChar.length() > 1) {
+    		keyChar = keyChar.substring(1,2);
+    	}
+    	
+    	List<String> protectedKeys = Arrays.asList("q", "w", "e", "t", "a", "s", "d", "f", "l");
+    	if (!protectedKeys.contains(keyChar)) {
+	    	for (int i = 65; i <= 90; ++i) {
+				if (keyChar.equalsIgnoreCase(GLFW.glfwGetKeyName(i, GLFW.glfwGetKeyScancode(i)))) {
+	    			keyCode = i;
+	    			break;
+	    		}
+	    	}
+    	}
+    	return keyCode;
+    }
 }
