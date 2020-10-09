@@ -31,7 +31,7 @@ authors="alef (aka Kalma)" #optional
 description='''
 Very simple clock which just shows the in-game time in a human-friendly way, as well as the remaining time to Night or Day.
 Press 'P" to change clock position on secreen if clock conflicts with other mods.
-Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods.
+Change this key in config file (config\simpleclock.toml) if this key conflicts with other mods.
 
 NOTE: There is a hidden "gift" which can only be found when looting chests in highly dangerous places... Good Luck!
 '''

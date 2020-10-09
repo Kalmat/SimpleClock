@@ -7,7 +7,7 @@ NOTE: There is a hidden "gift" which can only be found when looting chests in hi
 ### USAGE ###
 
 * Press 'P" to change clock position on secreen if clock conflicts with other mods.
-* Change this key in config file (config\simpleclock-common.toml) if this key conflicts with other mods (avoid reserved vanilla keys)
+* Change this key in config file (config\simpleclock.toml) if this key conflicts with other mods (avoid reserved vanilla keys)
 
 ### How do Install it? ###
 

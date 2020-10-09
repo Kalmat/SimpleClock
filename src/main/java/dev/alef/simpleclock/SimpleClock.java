@@ -16,6 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -53,14 +54,11 @@ public class SimpleClock {
 	
     private final Logger LOGGER = LogManager.getLogger();
     
-    private World WORLD;
-    private PlayerEntity PLAYER;
     private Item TIMESWORD = new SwordItem(TimeSwordTier.time_sword, 0, -2, new Item.Properties().group(ItemGroup.COMBAT));
     private final DeferredRegister<Item> CONTAINER = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
     private final RegistryObject<Item> ITEM = CONTAINER.register("time_sword", () -> TIMESWORD);
 	
-    private String[] ALIGNLIST = {"Left", "Center", "Right"};
-    private int ALIGNTO = ConfigFile.GENERAL.ClockPosition.get();
+    private int ALIGNTO = Refs.alignRight;
 	
 	private int KEYPOS;
 	private boolean debug = false;
@@ -74,7 +72,6 @@ public class SimpleClock {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         
         // Register other events we use
-        MinecraftForge.EVENT_BUS.register(new onPlayerJoinListener());
         MinecraftForge.EVENT_BUS.register(new onRenderGameOverlayListener());
         MinecraftForge.EVENT_BUS.register(new onHitEntityListener());
         MinecraftForge.EVENT_BUS.register(new onLooTableLoadListener());
@@ -87,8 +84,7 @@ public class SimpleClock {
         CONTAINER.register(FMLJavaModLoadingContext.get().getModEventBus());
         
         // Load config file
-        ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.CLIENT, ConfigFile.spec);
-        debug = ConfigFile.GENERAL.Debug.get();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigFile.spec);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -98,7 +94,9 @@ public class SimpleClock {
 	@SuppressWarnings("resource")
 	private void doClientStuff(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
-    	KEYPOS = SimpleClockClient.RegisterKeybinding(ConfigFile.GENERAL.Key.get());
+    	KEYPOS = SimpleClockClient.registerKeybindings(ConfigFile.GENERAL.Key.get());
+        ALIGNTO = ConfigFile.GENERAL.ClockPosition.get();
+        debug = ConfigFile.GENERAL.Debug.get();
     }
 	
     private void enqueueIMC(final InterModEnqueueEvent event) {
@@ -114,23 +112,11 @@ public class SimpleClock {
                 collect(Collectors.toList()));
     }
     
-    public class onPlayerJoinListener {
-    
-		@SubscribeEvent
-        public void onPlayerJoin(final EntityJoinWorldEvent event) {
-            if (event.getEntity() instanceof PlayerEntity) {
-                WORLD = event.getWorld();
-                PLAYER = (PlayerEntity) event.getEntity();
-            }
-        }
-    }
-
 	public class onRenderGameOverlayListener {
 	
 		@SubscribeEvent
 		@OnlyIn(Dist.CLIENT)
 		public void OnRenderGameOverlay(final RenderGameOverlayEvent.Text event) {
-			
 			SimpleClockClient.showClock(ALIGNTO);
 		}
 	}
@@ -177,10 +163,7 @@ public class SimpleClock {
 		public void onKeyInput(final KeyInputEvent event) {
 
 			if (event.getAction() == GLFW.GLFW_PRESS && event.getKey() == KEYPOS && SimpleClockClient.getCurrentScreen() == null) {
-		    	ALIGNTO++;
-		    	if (ALIGNTO >= ALIGNLIST.length) {
-		    		ALIGNTO = 0;
-		    	}
+				ALIGNTO = (ALIGNTO + 1) % Refs.alignList.length;
 			    ConfigFile.GENERAL.ClockPosition.set(ALIGNTO);
 		    }
 		}
