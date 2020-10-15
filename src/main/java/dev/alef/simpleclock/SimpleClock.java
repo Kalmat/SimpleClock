@@ -8,7 +8,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -18,7 +17,6 @@ import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -45,17 +43,13 @@ import dev.alef.simpleclock.items.TimeSwordTier;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("simpleclock")
+@Mod(Refs.MODID)
 public class SimpleClock {
-	
-	public static final String MODID = "simpleclock";
-	public static final String NAME = "alef's Simple Clock";
-	public static final String VERSION = "0.5.5";
 	
     private final Logger LOGGER = LogManager.getLogger();
     
     private Item TIMESWORD = new SwordItem(TimeSwordTier.time_sword, 0, -2, new Item.Properties().group(ItemGroup.COMBAT));
-    private final DeferredRegister<Item> CONTAINER = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
+    private final DeferredRegister<Item> CONTAINER = new DeferredRegister<>(ForgeRegistries.ITEMS, Refs.MODID);
     private final RegistryObject<Item> ITEM = CONTAINER.register("time_sword", () -> TIMESWORD);
 	
     private int ALIGNTO = Refs.alignRight;
@@ -101,7 +95,7 @@ public class SimpleClock {
 	
     private void enqueueIMC(final InterModEnqueueEvent event) {
         // some example code to dispatch IMC to another mod
-        InterModComms.sendTo(MODID, "helloworld", () -> { 
+        InterModComms.sendTo(Refs.MODID, "helloworld", () -> { 
         	LOGGER.info("Hello world from the MDK"); return "Hello world";});
     }
 
@@ -150,12 +144,17 @@ public class SimpleClock {
             	|| event.getName().equals(new ResourceLocation("minecraft", "chests/pillager_outpost"))
             	|| event.getName().equals(new ResourceLocation("minecraft", "chests/end_city_treasure"))
             	|| event.getName().equals(new ResourceLocation("minecraft", "chests/stronghold_library"))
-            	) {          	
-            	event.getTable().addPool(LootPool.builder().addEntry(TableLootEntry.builder(new ResourceLocation(MODID, "chests/time_sword"))).build());
+            	) {
+                event.getTable().addPool(LootPool.builder()
+                        					.addEntry(TableLootEntry.builder(new ResourceLocation(Refs.MODID, "chests/time_sword")).weight(1))
+                        					.bonusRolls(0, 1)
+                        					.name(Refs.MODID)
+                        					.build()
+                    					);
             }
-        }
+		}
 	}
-	
+            
 	public class onKeyInputListener {
 		
 		@SubscribeEvent(priority=EventPriority.NORMAL)
