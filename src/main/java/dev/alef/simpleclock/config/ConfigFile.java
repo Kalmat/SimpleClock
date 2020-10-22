@@ -18,8 +18,8 @@ public class ConfigFile {
         public General(ForgeConfigSpec.Builder builder) {
             builder.push("General");
             ClockPosition = builder
-                    .comment("Clock Position [0-Left/1-Center/2-Right|default:0]")
-                    .define("clockposition", 2);
+                    .comment("Clock Position [0-Up/10-Center/20-Down + 0-Left/1-Center/2-Right|default:02]")
+                    .define("clockposition", 02);
             Key = builder
                     .comment("Key to change position (avoid reserved keys) [\"(a-z)\"|default:\"p\"]")
                     .define("key", "p");

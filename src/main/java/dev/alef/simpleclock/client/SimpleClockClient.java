@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 
 import dev.alef.simpleclock.Refs;
 import net.minecraft.client.MainWindow;
@@ -44,10 +43,9 @@ public class SimpleClockClient {
         drawClock(matrixStack, alignTo);
     }
 	
-	@SuppressWarnings("resource")
 	private static void getClockInfo() {
 		
-		double mcTime = (int) Minecraft.getInstance().world.getDayTime();
+		double mcTime = (int) MC.world.getDayTime();
         HOURS = (int) ((mcTime / 1000 + 8) % 24);
         MINUTES = (int) (60 * (mcTime % 1000) / 1000);
         TIME = String.format("%02d:%02d", HOURS, MINUTES);
@@ -74,53 +72,83 @@ public class SimpleClockClient {
     	}
 	}
 
-    @SuppressWarnings("deprecation")
 	private static void drawClock(MatrixStack matrixStack, int alignTo) {
         
-    	float scaleA = 1.0f;
-		float scaleB = 0.7f;
-		float ratio = 1.0f;
-    	int xGap = 5;
+    	float scaleA = 1.0F;
+		float scaleB = 0.7F;
+		float ratio = 1.0F;
+		int xGap = 5;
 		int yGap = 5;
-		
-    	GlStateManager.pushMatrix();
-    	
-		GlStateManager.scaled(scaleA, scaleA, scaleA);
-		int fontHeightA = FR.FONT_HEIGHT;
-  		ratio = scaleA;
-		drawTextUp(matrixStack, TIME, alignTo, xGap, yGap, COLOR, ratio);
-		
-		GlStateManager.scaled(scaleB, scaleB, scaleB);
-		int fontHeightB = FR.FONT_HEIGHT;
-		ratio = (scaleA / scaleB);
-		drawTextUp(matrixStack, TEXT, alignTo, xGap, (int) (fontHeightA + (fontHeightB*1.2)), COLOR, ratio);
-		
-		GlStateManager.popMatrix();
-    }
-                    
-    private static  void drawTextUp(MatrixStack matrixStack, String text, int alignTo, int xGap, int yGap, int color, float ratio) {
-    	
-    	int x = (int) (xGap * ratio);
-    	int y = yGap;
-    	
-    	if (alignTo != Refs.alignLeft) {
-    		int screenWidth = MW.getScaledWidth();
-    		int textWidth = FR.getStringWidth(text);
-    		if (alignTo == Refs.alignCenter) {
-    			x = (int) (((screenWidth * ratio) - textWidth) / 2);
-    			y = yGap;
-    			}
-    		else if (alignTo == Refs.alignRight) {
-    			x = (int) ((screenWidth * ratio) - textWidth - (xGap * ratio));
-    			y = yGap;
-    		}
-    	}
-		FR.func_243246_a(matrixStack, new TranslationTextComponent(text), x, y, color);
-	}
+		String[] text = {TIME, TEXT};
 
-    @SuppressWarnings("resource")
+		matrixStack.push();
+    	
+		matrixStack.scale(scaleA, scaleA, scaleA);
+  		ratio = scaleA;
+		int x = calcX(alignTo, xGap, text, 0, ratio);
+		int y = calcY(alignTo, yGap, text, 0, ratio);
+		FR.func_243246_a(matrixStack, new TranslationTextComponent(text[0]), x, y, COLOR);
+
+		matrixStack.scale(scaleB, scaleB, scaleB);
+		ratio = (scaleA / scaleB);
+		x = calcX(alignTo, xGap, text, 1, ratio);
+		y = calcY(alignTo, yGap, text, 1, ratio);
+		FR.func_243246_a(matrixStack, new TranslationTextComponent(text[1]), x, y, COLOR);
+		
+		matrixStack.scale(1.0F, 1.0F, 1.0F);
+		matrixStack.pop();
+    }
+	
+	private static int calcX(int alignTo, int xGap, String[] text, int index, float ratio) {
+		
+		int x = (int) (xGap * ratio);
+    	
+		if (index >= 0 && index < text.length) {
+			
+	    	if (alignTo % 10 != Refs.alignLeft) {
+	    		
+	    		int screenWidth = MW.getScaledWidth();
+	    		int textWidth = FR.getStringWidth(text[index]);
+	    		
+	    		if (alignTo % 10 == Refs.alignHCenter) {
+	    			x = (int) (((screenWidth * ratio) - textWidth) / 2);
+	    		}
+	    		else if (alignTo % 10 == Refs.alignRight) {
+	    			x = (int) ((screenWidth * ratio) - textWidth - x);
+	    		}
+	    	}
+		}
+    	return x;
+	}
+	
+	private static int calcY(int alignTo, int yGap, String[] text, int index, float ratio) {
+		
+		int y = yGap;
+		int lineHeight = 0;
+		
+		if (index >= 0 && index < text.length ) {
+
+			lineHeight = FR.FONT_HEIGHT * index;
+
+			if (alignTo >= Refs.alignVCenter) {
+				
+	    		int screenHeight = MW.getScaledHeight();
+	    		int textHeight = FR.FONT_HEIGHT * text.length;
+
+	    		if (alignTo < Refs.alignDown) {
+	    			y = (int) ((screenHeight - textHeight) / 2);
+	    		}
+	    		else if (alignTo >= Refs.alignDown) {
+	    			y = screenHeight - textHeight;
+	    		}
+			}
+		}
+		y = (int) ((y + lineHeight) * ratio);
+		return y;
+	}
+                    
 	public static Screen getCurrentScreen() {
-    	return Minecraft.getInstance().currentScreen;
+    	return MC.currentScreen;
     }
     
 	public static int registerKeybindings(String stringKey) {

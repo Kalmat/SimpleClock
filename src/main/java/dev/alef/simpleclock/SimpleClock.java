@@ -48,11 +48,12 @@ public class SimpleClock {
     private final Logger LOGGER = LogManager.getLogger();
     
     private Item TIMESWORD = new SwordItem(TimeSwordTier.time_sword, 0, -2, new Item.Properties().group(ItemGroup.COMBAT));
-    private final DeferredRegister<Item> CONTAINER = DeferredRegister.create(ForgeRegistries.ITEMS, Refs.MODID);
+    private final DeferredRegister<Item> ITEM_REG = DeferredRegister.create(ForgeRegistries.ITEMS, Refs.MODID);
     @SuppressWarnings("unused")
-	private final RegistryObject<Item> ITEM = CONTAINER.register("time_sword", () -> TIMESWORD);
+	private final RegistryObject<Item> ITEM = ITEM_REG.register("time_sword", () -> TIMESWORD);
 	
-    private int ALIGNTO = Refs.alignRight;
+    private int ALIGN_INDEX = Refs.alignUpRight;
+    private int ALIGNTO = Refs.alignList[ALIGN_INDEX];
 	
 	private int KEYPOS;
 	@SuppressWarnings("unused")
@@ -76,7 +77,7 @@ public class SimpleClock {
         MinecraftForge.EVENT_BUS.register(this);
         
         // Register items and other stuff
-        CONTAINER.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ITEM_REG.register(FMLJavaModLoadingContext.get().getModEventBus());
         
         // Load config file
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigFile.spec);
@@ -89,7 +90,8 @@ public class SimpleClock {
 	private void doClientStuff(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
     	KEYPOS = SimpleClockClient.registerKeybindings(ConfigFile.GENERAL.Key.get());
-        ALIGNTO = ConfigFile.GENERAL.ClockPosition.get();
+        ALIGN_INDEX = ConfigFile.GENERAL.ClockPosition.get();
+        ALIGNTO = Refs.alignList[ALIGN_INDEX];
         debug = ConfigFile.GENERAL.Debug.get();
     }
 	
@@ -162,8 +164,9 @@ public class SimpleClock {
 		public void onKeyInput(final KeyInputEvent event) {
 
 			if (event.getAction() == GLFW.GLFW_PRESS && event.getKey() == KEYPOS && SimpleClockClient.getCurrentScreen() == null) {
-				ALIGNTO = (ALIGNTO + 1) % Refs.alignList.length;
-			    ConfigFile.GENERAL.ClockPosition.set(ALIGNTO);
+				ALIGN_INDEX = (ALIGN_INDEX + 1) % Refs.alignList.length;
+				ALIGNTO = Refs.alignList[ALIGN_INDEX];
+			    ConfigFile.GENERAL.ClockPosition.set(ALIGN_INDEX);
 		    }
 		}
     }

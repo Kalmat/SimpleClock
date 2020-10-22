@@ -1,4 +1,4 @@
-# Simple Clock for Minecraft 1.14.4 #
+# Simple Clock for Minecraft 1.16.3 #
 
 This is a very simple clock which just shows the in-game time in a human-friendly way, as well as the remaining time to Night or Day (usual leeping or Wake up times).
 
